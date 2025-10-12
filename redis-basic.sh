@@ -133,8 +133,8 @@ maxmemory-policy <policy>
 #  - noeviction      : Return error when memory limit is reached (default)
 #  - allkeys-lru     : Evict least recently used keys among all keys
 #  - volatile-lru    : Evict least recently used keys with expiration set
-#  - allkeys-random  : Evict random keys among all keys
 #  - allkeys-lfu     : Evict least frequently used keys among all keys
 #  - volatile-lfu    : Evict least frequently used keys with expiration set 
 #  - volatile-random : Evict random keys with expiration set
+#  - allkeys-random  : Evict random keys among all keys
 #  - volatile-ttl    : Evict keys with the nearest expiration time (shortest TTL)
