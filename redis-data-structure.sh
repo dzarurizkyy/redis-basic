@@ -135,3 +135,48 @@ geodist key member1 member2 distance-unit
 
 ## Search for members within a given radius
 geosearch key fromlonlat longitude latitude BYRADIUS distance distance-unit
+
+
+# ===============================
+# 🌊 STREAMS
+# ===============================
+# - Streams are an append-only data structure that works like a log or event stream.
+# - Each entry in a stream is a collection of key-value pairs and has a unique ID.
+# - Common use cases: event sourcing, message brokers, data pipelines, and activity feeds.
+
+## Add an entry to a stream
+xadd stream-name * key value
+#   → Adds a new entry with an auto-generated ID ("*" uses current timestamp)
+
+## Read entries from a stream
+xread streams stream-name 0
+#   → Reads all entries starting from the beginning (ID 0)
+
+## Read entries with a limit (number of messages to read)
+xread count value streams stream-name 0
+#   → Reads up to 'value' number of entries from the stream, starting from ID 0
+#   → Useful when you only want to fetch a limited number of messages at a time
+
+## Block and wait for new entries
+xread block 0 streams stream-name last-seen-id
+#   → Blocks the connection and waits indefinitely (0 = no timeout) for new entries
+#   → Useful for implementing real-time consumers or message listeners
+#   → When new data arrives, Redis immediately returns it to the client
+
+## Create a new consumer group for a stream
+xgroup create stream-name group-name $ mkstream
+#   → Creates a consumer group for the specified stream
+#   → '$' means the group will start reading only new entries added after the group is created
+#   → 'mkstream' creates the stream automatically if it doesn’t exist
+
+## Create a new consumer within an existing consumer group
+xgroup createconsumer stream-name group-name member-group-name
+#   → Registers a new consumer (member) inside the given consumer group
+#   → Useful when adding multiple consumers that will share the stream workload
+
+## Read messages using a consumer group
+xreadgroup group group-name member-group-name count 1 block 0 streams stream-name >
+#   → Reads messages as part of the specified consumer group
+#   → 'count 1' limits the number of messages fetched at once
+#   → 'block 0' waits indefinitely until a new message arrives
+#   → '>' means read only messages that have never been delivered to any consumer
